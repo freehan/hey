@@ -54,6 +54,8 @@ type report struct {
 
 	errorDist      map[string]int
 	statusCodeDist map[int]int
+	// mixia added
+	responseDist   map[string]int
 	lats           []float64
 	sizeTotal      int64
 	numRes         int64
@@ -69,6 +71,8 @@ func newReport(w io.Writer, results chan *result, output string, n int) *report 
 		results:        results,
 		done:           make(chan bool, 1),
 		statusCodeDist: make(map[int]int),
+		//mixia
+		responseDist:   make(map[string]int),
 		errorDist:      make(map[string]int),
 		w:              w,
 		connLats:       make([]float64, 0, cap),
@@ -105,6 +109,8 @@ func runReporter(r *report) {
 			if res.contentLength > 0 {
 				r.sizeTotal += res.contentLength
 			}
+			//mixia
+			r.responseDist[res.responseBody]++
 		}
 	}
 	// Signal reporter is done.
@@ -152,6 +158,9 @@ func (r *report) snapshot() Report {
 		Total:          r.total,
 		ErrorDist:      r.errorDist,
 		StatusCodeDist: r.statusCodeDist,
+		//mixia
+		ResponseDist: r.responseDist,
+
 		NumRes:         r.numRes,
 		Lats:           make([]float64, len(r.lats)),
 		ConnLats:       make([]float64, len(r.lats)),
@@ -290,6 +299,8 @@ type Report struct {
 
 	ErrorDist      map[string]int
 	StatusCodeDist map[int]int
+	//mixia
+	ResponseDist map[string]int
 	SizeTotal      int64
 	SizeReq        int64
 	NumRes         int64

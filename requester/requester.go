@@ -44,6 +44,7 @@ type result struct {
 	resDuration   time.Duration // response "read" duration
 	delayDuration time.Duration // delay between response and request
 	contentLength int64
+	responseBody  string
 }
 
 type Work struct {
@@ -173,11 +174,14 @@ func (b *Work) makeRequest(c *http.Client) {
 	}
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	resp, err := c.Do(req)
+	body := []byte{}
 	if err == nil {
 		size = resp.ContentLength
 		code = resp.StatusCode
-		io.Copy(ioutil.Discard, resp.Body)
+		//io.Copy(ioutil.Discard, resp.Body)
+		body, _ = ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
+
 	}
 	t := now()
 	resDuration = t - resStart
@@ -192,6 +196,8 @@ func (b *Work) makeRequest(c *http.Client) {
 		reqDuration:   reqDuration,
 		resDuration:   resDuration,
 		delayDuration: delayDuration,
+		//mixia
+		responseBody: string(body),
 	}
 }
 

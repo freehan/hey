@@ -95,6 +95,9 @@ Details (average, fastest, slowest):
 Status code distribution:{{ range $code, $num := .StatusCodeDist }}
   [{{ $code }}]	{{ $num }} responses{{ end }}
 
+Response distribution:{{ range $response, $num := .ResponseDist }}
+  [{{ $response }}]	{{ $num }} responses{{ end }}
+
 {{ if gt (len .ErrorDist) 0 }}Error distribution:{{ range $err, $num := .ErrorDist }}
   [{{ $num }}]	{{ $err }}{{ end }}{{ end }}
 `
